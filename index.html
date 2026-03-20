@@ -16,230 +16,85 @@
   /* --- Splash Screen --- */
   .splash-screen {
     position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
+    top: 0; left: 0; width: 100%; height: 100%;
     background: radial-gradient(circle at center, #111 40%, #000);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
+    display: flex; align-items: center; justify-content: center; flex-direction: column;
     z-index: 9999;
     animation: fadeOut 1s ease-in-out forwards;
     animation-delay: 3s;
   }
+  .splash-logo { width: 120px; height: 120px; animation: spin 6s linear infinite; }
+  .splash-title { font-size: 28px; color: gold; font-weight: bold; margin-top: 20px; }
+  .splash-subtitle { font-size: 16px; color: #ccc; margin-top: 5px; }
 
-  .splash-logo {
-    width: 120px;
-    height: 120px;
-    animation: spin 6s linear infinite;
-  }
-
-  .splash-title {
-    font-size: 28px;
-    color: gold;
-    font-weight: bold;
-    margin-top: 20px;
-  }
-
-  .splash-subtitle {
-    font-size: 16px;
-    color: #ccc;
-    margin-top: 5px;
-  }
-
-  @keyframes fadeOut {
-    to {
-      opacity: 0;
-      visibility: hidden;
-    }
-  }
+  @keyframes fadeOut { to { opacity: 0; visibility: hidden; } }
 
   /* SPLASH VIDEO */
   #splash {
-    position: fixed;
-    top: 0; left: 0; right: 0; bottom: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+    display: flex; align-items: center; justify-content: center;
     background: radial-gradient(circle, #1a1a1a, #000);
-    z-index: 999;
-    transition: opacity 0.4s ease-out;
+    z-index: 999; transition: opacity 0.4s ease-out;
   }
-
-  #splash video {
-    width: 120px;
-    height: 120px;
-    border-radius: 50%;
-    box-shadow: 0 0 30px #f9d56e;
-  }
+  #splash video { width: 120px; height: 120px; border-radius: 50%; box-shadow: 0 0 30px #f9d56e; }
 
   /* HEADER */
   .top-bar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 8px 15px;
-    background: linear-gradient(180deg, #000000, #1a0d00);
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 8px 15px; background: linear-gradient(180deg, #000000, #1a0d00);
     border-bottom: 1px solid #333;
   }
-
+  
+  /* Profile Upload Styling */
   .profile-pic {
-    width: 45px;
-    height: 45px;
-    border-radius: 50%;
-    border: 2px solid gold;
+    width: 45px; height: 45px; border-radius: 50%; border: 2px solid gold; cursor: pointer; object-fit: cover;
   }
-
   .wallet-box {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    background: rgba(255, 215, 0, 0.05);
-    padding: 6px 10px;
-    border-radius: 8px;
-    font-weight: bold;
-    color: gold;
+    display: flex; align-items: center; gap: 6px;
+    background: rgba(255, 215, 0, 0.05); padding: 6px 10px; border-radius: 8px; font-weight: bold; color: gold;
   }
+  .wallet-box .balance { font-size: 16px; color: #f0d27a; font-weight: bold; }
+  .wallet-box img { width: 18px; height: 18px; }
 
-  .wallet-box .balance {
-    font-size: 16px;
-    color: #f0d27a;
-    font-weight: bold;
-  }
+  .referral-box { text-align: center; }
+  .referral-icon { width: 38px; height: 38px; animation: pulse 2s infinite; }
+  .referral-count { font-size: 13px; color: #f0d27a; margin-top: 2px; }
+  .kyc-status { font-size: 12px; color: #00ff99; margin-top: -2px; }
 
-  .wallet-box img {
-    width: 18px;
-    height: 18px;
-  }
-
-  .referral-box {
-    text-align: center;
-  }
-  .referral-icon {
-    width: 38px;
-    height: 38px;
-    animation: pulse 2s infinite;
-  }
-  .referral-count {
-    font-size: 13px;
-    color: #f0d27a;
-    margin-top: 2px;
-  }
-  .kyc-status {
-    font-size: 12px;
-    color: #00ff99;
-    margin-top: -2px;
-  }
-
-  @keyframes pulse {
-    0% { filter: drop-shadow(0 0 0px gold); }
-    50% { filter: drop-shadow(0 0 8px gold); }
-    100% { filter: drop-shadow(0 0 0px gold); }
-  }
+  @keyframes pulse { 0% { filter: drop-shadow(0 0 0px gold); } 50% { filter: drop-shadow(0 0 8px gold); } 100% { filter: drop-shadow(0 0 0px gold); } }
 
   /* MAIN DASHBOARD */
   .dashboard {
-    max-width: 420px;
-    margin: 40px auto;
-    padding: 20px;
-    background: rgba(25, 25, 25, 0.95);
-    border-radius: 18px;
-    box-shadow: 0 0 35px rgba(255, 215, 0, 0.15);
+    max-width: 420px; margin: 40px auto; padding: 20px;
+    background: rgba(25, 25, 25, 0.95); border-radius: 18px; box-shadow: 0 0 35px rgba(255, 215, 0, 0.15);
   }
+  .coin-wrap { display: flex; justify-content: center; margin: 20px 0; }
+  .coin-wrap video { width: 100px; height: 100px; border-radius: 50%; box-shadow: 0 0 25px #ffdf70; }
 
-  .coin-wrap {
-    display: flex;
-    justify-content: center;
-    margin: 20px 0;
-  }
+  @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
-  .coin-wrap video {
-    width: 100px;
-    height: 100px;
-    border-radius: 50%;
-    box-shadow: 0 0 25px #ffdf70;
-  }
-
-  @keyframes spin {
-    from { transform: rotate(0deg); }
-    to { transform: rotate(360deg); }
-  }
-
-  .status {
-    text-align: center;
-  }
-
-  .status h3 {
-    margin: 8px 0;
-    font-size: 18px;
-  }
-
-  .progress {
-    height: 8px;
-    background: #333;
-    border-radius: 10px;
-    overflow: hidden;
-    margin: 10px 0;
-  }
-
-  .progress span {
-    display: block;
-    height: 100%;
-    width: 0%;
-    background: linear-gradient(90deg, #ffda5c, #ffb400);
-    border-radius: 10px;
-    transition: width 0.3s linear;
-  }
-
-  .reward {
-    text-align: center;
-    font-weight: bold;
-  }
-
-  .supply {
-    margin-top: 25px;
-    font-size: 13px;
-    opacity: 0.9;
-    padding-left: 10px;
-  }
-
-  .supply p {
-    margin: 4px 0;
-  }
-
+  .status { text-align: center; }
+  .status h3 { margin: 8px 0; font-size: 18px; }
+  .progress { height: 8px; background: #333; border-radius: 10px; overflow: hidden; margin: 10px 0; }
+  .progress span { display: block; height: 100%; width: 0%; background: linear-gradient(90deg, #ffda5c, #ffb400); border-radius: 10px; transition: width 0.3s linear; }
+  .reward { text-align: center; font-weight: bold; }
+  .supply { margin-top: 25px; font-size: 13px; opacity: 0.9; padding-left: 10px; }
+  .supply p { margin: 4px 0; }
   button {
-    margin-top: 18px;
-    padding: 12px;
-    width: 100%;
-    border: none;
-    border-radius: 8px;
-    background: linear-gradient(90deg, #f6d365, #fda085);
-    color: #000;
-    font-weight: bold;
-    cursor: pointer;
+    margin-top: 18px; padding: 12px; width: 100%; border: none; border-radius: 8px;
+    background: linear-gradient(90deg, #f6d365, #fda085); color: #000; font-weight: bold; cursor: pointer;
   }
-
-  button:active {
-    transform: scale(0.98);
-  }
-
+  button:active { transform: scale(0.98); }
   #mining-log {
-    font-family: monospace;
-    font-size: 12px;
-    color: #00ffaa;
-    background: rgba(0,0,0,0.4);
-    padding: 8px;
-    border-radius: 6px;
-    height: 80px;
-    overflow-y: hidden;
-    margin-top: 10px;
-    line-height: 1.3em;
+    font-family: monospace; font-size: 12px; color: #00ffaa;
+    background: rgba(0,0,0,0.4); padding: 8px; border-radius: 6px; height: 80px;
+    overflow-y: hidden; margin-top: 10px; line-height: 1.3em;
   }
 </style>
 </head>
 <body>
+
+<input type="file" id="profileUpload" accept="image/*" style="display: none;">
 
 <div id="splash-screen" class="splash-screen">
   <div class="splash-content" style="text-align: center;">
@@ -257,7 +112,7 @@
 
 <div class="top-bar">
   <div class="profile-box">
-    <img src="profile.jpg" class="profile-pic" alt="Profile">
+    <img src="profile.jpg" class="profile-pic" id="profilePic" alt="Profile" title="Klik untuk ganti foto">
   </div>
 
   <div class="wallet-box" id="wallet-display">
@@ -310,26 +165,79 @@ const TOKEN_ABI = [
   "function symbol() view returns (string)"
 ];
 
-// VARIABEL TAHAP 2 (Siklus 8 Jam & Penyesuaian Tokenomics)
-const CYCLE_DURATION = 8 * 60 * 60; // 8 Jam dalam satuan detik
-const REWARD_PER_SEC = 0.000012; // Reward CPI per detik (6 digit)
-const STORAGE_KEY = "cpi_mining_start_time";
+const CYCLE_DURATION = 8 * 60 * 60; // 8 Jam
+const KEY_ELAPSED = "cpi_elapsed_time";
+const KEY_LAST_START = "cpi_last_start";
+const KEY_IS_MINING = "cpi_is_mining";
 
 let provider, signer, userAddress, tokenContract;
 let mining = false;
 let progressVal = 0;
 let totalReward = 0.000000;
 let countdown = CYCLE_DURATION;
-let circulating = 59999789; // Start di 60 Juta
+let circulating = 59999789; 
 
 let interval, logInterval, timerInterval;
 
 const logs = [
   "Connecting to Cloud Node...", "Authenticating wallet...", "Fetching task...",
-  "Verifying block hash...", "Mining in progress...", "Synchronizing blockchain..."
+  "Verifying block hash...", "Mining in progress...", "Synchronizing blockchain...",
+"Received remote task 6fb854fx7739bee20l...",
+  "Verifying block hash...",
+  "TaskConsumer initialized...",
+  "Downloading model 65.9%...",
+  "Loaded dataset bytes 56450...",
+   "Received remote task 5gh814ndx709igf103...",
+   "Loaded dataset bytes 90264...",
+   "Type: float32, shape: [ 1,  223,  223, 4 ]  data: 2256001..."
 ];
 
-// --- CORE FUNCTIONS (WEB3) ---
+
+// --- FITUR UPLOAD FOTO PROFIL LOKAL ---
+const profilePic = document.getElementById('profilePic');
+const profileUpload = document.getElementById('profileUpload');
+
+// Muat foto yang tersimpan saat web dibuka
+const savedPic = localStorage.getItem('cpi_profile_pic');
+if (savedPic) {
+  profilePic.src = savedPic;
+}
+
+// Klik gambar untuk buka galeri
+profilePic.onclick = () => {
+  profileUpload.click();
+};
+
+// Proses penyimpanan gambar ke browser
+profileUpload.onchange = (e) => {
+  const file = e.target.files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      profilePic.src = event.target.result;
+      localStorage.setItem('cpi_profile_pic', event.target.result); // Simpan ke memori lokal
+      addLog("✅ Foto profil berhasil diperbarui!");
+    };
+    reader.readAsDataURL(file);
+  }
+};
+
+// --- FUNGSI RUMUS DYNAMIC REWARD ---
+function calculateDynamicReward(elapsedSeconds) {
+  const fullMinutes = Math.floor(elapsedSeconds / 60);
+  const rewardPerMinute = 0.000210; 
+  let total = fullMinutes * rewardPerMinute;
+  const remainingSeconds = Math.floor(elapsedSeconds % 60);
+
+  for (let i = 0; i < remainingSeconds; i++) {
+    let tier = Math.floor(i / 10); 
+    let rateForThisSecond = (tier + 1) * 0.000001;
+    total += rateForThisSecond;
+  }
+  return total;
+}
+
+// --- CORE FUNCTIONS (WEB3 WAJIB ONLINE METAMASK) ---
 async function checkNetwork() {
   const chainId = await window.ethereum.request({ method: 'eth_chainId' });
   if (chainId !== SEPOLIA_CHAIN_ID) {
@@ -346,8 +254,9 @@ async function checkNetwork() {
 
 async function connectWallet() {
   if (!window.ethereum) {
-    alert("Metamask tidak terdeteksi!");
-    return false;
+    // KEMBALIKAN VALIDASI STRICT (WAJIB METAMASK)
+    alert("Metamask tidak terdeteksi! Silakan buka web ini melalui browser yang memiliki ekstensi Web3 (seperti Kiwi Browser) atau di DApp Browser MetaMask.");
+    return false; 
   }
   try {
     addLog("⏳ Connecting to wallet...");
@@ -373,7 +282,7 @@ async function connectWallet() {
   }
 }
 
-// --- LOGIKA TAHAP 2 (LOCAL STORAGE & 8 JAM) ---
+// --- LOGIKA UI & ANIMASI ---
 function addLog(msg) {
   const logBox = document.getElementById('mining-log');
   logBox.innerHTML = msg + "<br>" + logBox.innerHTML;
@@ -386,18 +295,18 @@ function formatTime(sec) {
   return `${h}:${m}:${s}`;
 }
 
-function updateUI(elapsedSeconds) {
-  countdown = CYCLE_DURATION - elapsedSeconds;
-  totalReward = elapsedSeconds * REWARD_PER_SEC;
+function updateUI(totalElapsedSeconds) {
+  countdown = CYCLE_DURATION - Math.floor(totalElapsedSeconds);
   
   if (countdown <= 0) {
+    totalReward = calculateDynamicReward(CYCLE_DURATION);
     completeMiningCycle();
   } else {
+    totalReward = calculateDynamicReward(totalElapsedSeconds);
     document.getElementById('timer').textContent = formatTime(countdown);
-    // Tampilan 6 digit desimal
     document.getElementById('reward').innerText = totalReward.toFixed(6) + " CPI";
     
-    progressVal = (elapsedSeconds / CYCLE_DURATION) * 100;
+    progressVal = (totalElapsedSeconds / CYCLE_DURATION) * 100;
     document.getElementById('progress-bar').style.width = progressVal + "%";
   }
 }
@@ -411,8 +320,8 @@ function completeMiningCycle() {
   document.getElementById('timer').textContent = "00:00:00";
   document.getElementById('progress-bar').style.width = "100%";
   
-  const finalReward = CYCLE_DURATION * REWARD_PER_SEC;
-  document.getElementById('reward').innerText = finalReward.toFixed(6) + " CPI";
+  localStorage.setItem(KEY_IS_MINING, "false");
+  localStorage.setItem(KEY_ELAPSED, CYCLE_DURATION.toString());
   
   const btn = document.getElementById('mineBtn');
   btn.innerText = "🎁 Claim Reward (Watch Ad)";
@@ -420,20 +329,26 @@ function completeMiningCycle() {
   addLog("✅ 8 Jam selesai. Silakan Claim!");
 }
 
-function startMiningAnimation(elapsedSeconds = 0) {
+// --- FUNGSI START / RESUME ---
+function startMiningAnimation() {
   mining = true;
-  document.getElementById('mineBtn').innerText = "🛑 Mining in Progress";
-  document.getElementById('mineBtn').style.background = "linear-gradient(90deg, #f6d365, #fda085)";
+  localStorage.setItem(KEY_IS_MINING, "true");
+  localStorage.setItem(KEY_LAST_START, Date.now().toString());
+
+  document.getElementById('mineBtn').innerText = "⏸️ Pause Mining";
+  document.getElementById('mineBtn').style.background = "linear-gradient(90deg, #ffcc00, #ff9900)"; 
   document.querySelector(".status h3").innerText = "Cloud Node — Active";
   document.getElementById('coinVideo').style.animation = "spin 4s linear infinite";
 
   timerInterval = setInterval(() => {
-    const startTime = parseInt(localStorage.getItem(STORAGE_KEY));
-    const currentElapsed = Math.floor((Date.now() - startTime) / 1000);
-    updateUI(currentElapsed);
+    let storedElapsed = parseFloat(localStorage.getItem(KEY_ELAPSED)) || 0;
+    let lastStart = parseInt(localStorage.getItem(KEY_LAST_START));
+    let currentSessionElapsed = (Date.now() - lastStart) / 1000;
+    let totalElapsed = storedElapsed + currentSessionElapsed;
     
-    // Animasi penurunan supply setiap 12 detik
-    if (currentElapsed % 12 === 0 && countdown > 0) {
+    updateUI(totalElapsed);
+    
+    if (Math.floor(totalElapsed) % 12 === 0 && countdown > 0) {
       circulating -= 1;
       document.getElementById('circulating-text').innerHTML = '🔄 Circulating: ' + circulating.toLocaleString() + ' CPI';
     }
@@ -444,41 +359,81 @@ function startMiningAnimation(elapsedSeconds = 0) {
   }, 3000);
 }
 
-function resumeMiningState() {
-  const startTime = localStorage.getItem(STORAGE_KEY);
-  if (startTime) {
-    const elapsedSeconds = Math.floor((Date.now() - parseInt(startTime)) / 1000);
-    if (elapsedSeconds < CYCLE_DURATION) {
-      addLog("🔄 Resuming previous mining session...");
-      startMiningAnimation(elapsedSeconds);
+// --- FUNGSI PAUSE ---
+function pauseMiningProcess() {
+  mining = false;
+  clearInterval(timerInterval);
+  clearInterval(logInterval);
+  
+  let storedElapsed = parseFloat(localStorage.getItem(KEY_ELAPSED)) || 0;
+  let lastStart = parseInt(localStorage.getItem(KEY_LAST_START));
+  let sessionElapsed = (Date.now() - lastStart) / 1000;
+  
+  localStorage.setItem(KEY_ELAPSED, (storedElapsed + sessionElapsed).toString());
+  localStorage.setItem(KEY_IS_MINING, "false");
+
+  document.getElementById('coinVideo').style.animation = "none";
+  document.querySelector(".status h3").innerText = "Cloud Node — Paused";
+  
+  const btn = document.getElementById('mineBtn');
+  btn.innerText = "▶️ Resume Mining";
+  btn.style.background = "linear-gradient(90deg, #f6d365, #fda085)";
+  
+  addLog("⏸️ Mining dijeda. Data diamankan.");
+}
+
+// --- CEK STATUS SAAT HALAMAN DIBUKA ---
+function checkInitialState() {
+  let isMining = localStorage.getItem(KEY_IS_MINING);
+  let storedElapsed = parseFloat(localStorage.getItem(KEY_ELAPSED)) || 0;
+
+  if (storedElapsed >= CYCLE_DURATION) {
+    updateUI(CYCLE_DURATION);
+    return;
+  }
+
+  if (isMining === "true") {
+    let lastStart = parseInt(localStorage.getItem(KEY_LAST_START));
+    let timeOffline = (Date.now() - lastStart) / 1000;
+    let newElapsed = storedElapsed + timeOffline;
+
+    if (newElapsed >= CYCLE_DURATION) {
+      localStorage.setItem(KEY_ELAPSED, CYCLE_DURATION.toString());
+      updateUI(CYCLE_DURATION);
     } else {
-      updateUI(CYCLE_DURATION); 
+      localStorage.setItem(KEY_ELAPSED, newElapsed.toString());
+      localStorage.setItem(KEY_LAST_START, Date.now().toString()); 
+      addLog("🔄 Melanjutkan proses latar...");
+      startMiningAnimation();
     }
+  } else if (storedElapsed > 0) {
+    updateUI(storedElapsed);
+    document.querySelector(".status h3").innerText = "Cloud Node — Paused";
+    document.getElementById('mineBtn').innerText = "▶️ Resume Mining";
   }
 }
 
 // --- EVENTS ---
 document.getElementById('mineBtn').onclick = async () => {
+  let storedElapsed = parseFloat(localStorage.getItem(KEY_ELAPSED)) || 0;
+
+  if (storedElapsed >= CYCLE_DURATION) {
+    alert("Memuat Iklan AdMob... (Simulasi)\nSetelah iklan selesai, proses reset dari awal.");
+    localStorage.removeItem(KEY_ELAPSED);
+    localStorage.removeItem(KEY_LAST_START);
+    localStorage.removeItem(KEY_IS_MINING);
+    window.location.reload(); 
+    return;
+  }
+
   if (!mining) {
-    const startTime = localStorage.getItem(STORAGE_KEY);
-    const isFinished = startTime && Math.floor((Date.now() - parseInt(startTime)) / 1000) >= CYCLE_DURATION;
-
-    if (isFinished) {
-      // PROSES CLAIM DITEKAN
-      alert("Memuat Iklan AdMob... (Simulasi)\nSetelah iklan selesai, reward akan masuk ke wallet, dan siklus diulang.");
-      localStorage.removeItem(STORAGE_KEY); 
-      window.location.reload(); 
-      return;
-    }
-
     const connected = await connectWallet();
     if (connected) {
-      localStorage.setItem(STORAGE_KEY, Date.now().toString()); 
-      startMiningAnimation(0);
-      addLog("🚀 Mining cycle started (8 Hours)");
+      startMiningAnimation();
+      addLog(storedElapsed > 0 ? "▶️ Mining dilanjutkan" : "🚀 Mining cycle dimulai");
     }
   } else {
-    addLog("⚠️ Mining sedang berjalan. Tidak bisa distop manual.");
+    pauseMiningProcess();
   }
 };
 
@@ -488,7 +443,7 @@ window.onload = () => {
     setTimeout(() => { document.getElementById('splash').style.display = 'none'; }, 600);
   }, 5000);
 
-  resumeMiningState();
+  checkInitialState();
 };
 
 if (window.ethereum) {
