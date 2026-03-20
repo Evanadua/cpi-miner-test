@@ -27,7 +27,7 @@
     flex-direction: column;
     z-index: 9999;
     animation: fadeOut 1s ease-in-out forwards;
-    animation-delay: 3s; /* durasi tampil 3 detik */
+    animation-delay: 3s;
   }
 
   .splash-logo {
@@ -264,7 +264,7 @@
     <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="#FFD700" viewBox="0 0 24 24" style="vertical-align: middle; margin-right: 5px;">
       <path d="M21 7H5V5a2 2 0 0 1 2-2h14v4zM3 9h18a1 1 0 0 1 1 1v10a2 2 0 0 1-2 2H3V9zm14 4a2 2 0 1 0 0 4h4v-4h-4z"/>
     </svg>
-    <span class="balance">10.211</span> <img src="cpi-logo-gold.png" alt="CPI">
+    <span class="balance">0.000</span> <img src="cpi-logo-gold.png" alt="CPI">
   </div>
 
   <div class="referral-box">
@@ -282,27 +282,27 @@
   </div>
 
   <div class="status">
-    <h3>Cloud Node — Active</h3>
-    <p>⏳ <span id="timer">08:29:29</span></p>
+    <h3>Cloud Node — Ready</h3>
+    <p>⏳ <span id="timer">08:00:00</span></p>
     <div class="progress"><span id="progress-bar"></span></div>
-    <p class="reward">Reward: <span id="reward">0.000 CPI</span></p>
+    <p class="reward">Reward: <span id="reward">0.000000 CPI</span></p>
   </div>
 
   <div id="mining-log"></div>
 
   <div class="supply">
     <p>💰 Total Supply: 100,000,000 CPI</p>
-    <p id="circulating-text">🔄 Circulating: 49,999,789 CPI</p>
+    <p id="circulating-text">🔄 Circulating: 59,999,789 CPI</p>
     <p>🔥 Burned: 25,000 CPI</p>
   </div>
 
   <button id="mineBtn">⛏️ Start Mining</button>
 </div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.7.2/ethers.umd.min.js"></script>
+<script src="https://unpkg.com/ethers@5.7.2/dist/ethers.umd.min.js" type="application/javascript"></script>
 <script>
 // --- CONFIG & GLOBAL VARIABLES ---
-const TOKEN_ADDRESS = "0x937fCf7A4aAfb78B2CeB23CbB3Ba124AaFd453C8"; // CPI token
+const TOKEN_ADDRESS = "0x937fCf7A4aAfb78B2CeB23CbB3Ba124AaFd453C8";
 const SEPOLIA_CHAIN_ID = "0xaa36a7";
 const TOKEN_ABI = [
   "function balanceOf(address owner) view returns (uint256)",
@@ -310,22 +310,26 @@ const TOKEN_ABI = [
   "function symbol() view returns (string)"
 ];
 
+// VARIABEL TAHAP 2 (Siklus 8 Jam & Penyesuaian Tokenomics)
+const CYCLE_DURATION = 8 * 60 * 60; // 8 Jam dalam satuan detik
+const REWARD_PER_SEC = 0.000012; // Reward CPI per detik (6 digit)
+const STORAGE_KEY = "cpi_mining_start_time";
+
 let provider, signer, userAddress, tokenContract;
 let mining = false;
 let progressVal = 0;
-let totalReward = 0.000;
-let countdown = 8 * 60 * 60 + 29 * 60 + 29;
-let circulating = 49999789;
+let totalReward = 0.000000;
+let countdown = CYCLE_DURATION;
+let circulating = 59999789; // Start di 60 Juta
 
 let interval, logInterval, timerInterval;
 
 const logs = [
   "Connecting to Cloud Node...", "Authenticating wallet...", "Fetching task...",
-  "Verifying block hash...", "Mining in progress...", "Reward pending...", "Synchronizing with blockchain..."
+  "Verifying block hash...", "Mining in progress...", "Synchronizing blockchain..."
 ];
 
-// --- CORE FUNCTIONS (TAHAP 1) ---
-
+// --- CORE FUNCTIONS (WEB3) ---
 async function checkNetwork() {
   const chainId = await window.ethereum.request({ method: 'eth_chainId' });
   if (chainId !== SEPOLIA_CHAIN_ID) {
@@ -342,7 +346,7 @@ async function checkNetwork() {
 
 async function connectWallet() {
   if (!window.ethereum) {
-    alert("Metamask tidak terdeteksi. Silakan install dahulu.");
+    alert("Metamask tidak terdeteksi!");
     return false;
   }
   try {
@@ -360,17 +364,16 @@ async function connectWallet() {
     const formatted = ethers.utils.formatUnits(balance, decimals);
     document.querySelector(".wallet-box .balance").innerText = parseFloat(formatted).toFixed(3);
     
-    addLog(`✅ Wallet connected: ${userAddress.substring(0,6)}...`);
+    addLog(`✅ Connected: ${userAddress.substring(0,6)}...`);
     return true;
   } catch (err) {
     console.error(err);
-    addLog("❌ Error: " + err.message.substring(0, 40)); 
+    addLog("❌ Connection failed.");
     return false;
   }
 }
 
-// --- UI & ANIMATION LOGIC ---
-
+// --- LOGIKA TAHAP 2 (LOCAL STORAGE & 8 JAM) ---
 function addLog(msg) {
   const logBox = document.getElementById('mining-log');
   logBox.innerHTML = msg + "<br>" + logBox.innerHTML;
@@ -383,72 +386,114 @@ function formatTime(sec) {
   return `${h}:${m}:${s}`;
 }
 
-function startMiningProcess() {
+function updateUI(elapsedSeconds) {
+  countdown = CYCLE_DURATION - elapsedSeconds;
+  totalReward = elapsedSeconds * REWARD_PER_SEC;
+  
+  if (countdown <= 0) {
+    completeMiningCycle();
+  } else {
+    document.getElementById('timer').textContent = formatTime(countdown);
+    // Tampilan 6 digit desimal
+    document.getElementById('reward').innerText = totalReward.toFixed(6) + " CPI";
+    
+    progressVal = (elapsedSeconds / CYCLE_DURATION) * 100;
+    document.getElementById('progress-bar').style.width = progressVal + "%";
+  }
+}
+
+function completeMiningCycle() {
+  mining = false;
+  clearInterval(timerInterval);
+  clearInterval(logInterval);
+  document.getElementById('coinVideo').style.animation = "none";
+  document.querySelector(".status h3").innerText = "Cycle Complete!";
+  document.getElementById('timer').textContent = "00:00:00";
+  document.getElementById('progress-bar').style.width = "100%";
+  
+  const finalReward = CYCLE_DURATION * REWARD_PER_SEC;
+  document.getElementById('reward').innerText = finalReward.toFixed(6) + " CPI";
+  
+  const btn = document.getElementById('mineBtn');
+  btn.innerText = "🎁 Claim Reward (Watch Ad)";
+  btn.style.background = "linear-gradient(90deg, #00ffaa, #00b377)"; 
+  addLog("✅ 8 Jam selesai. Silakan Claim!");
+}
+
+function startMiningAnimation(elapsedSeconds = 0) {
   mining = true;
-  document.getElementById('mineBtn').innerText = "🛑 Stop Mining";
-  addLog("Mining session started...");
+  document.getElementById('mineBtn').innerText = "🛑 Mining in Progress";
+  document.getElementById('mineBtn').style.background = "linear-gradient(90deg, #f6d365, #fda085)";
+  document.querySelector(".status h3").innerText = "Cloud Node — Active";
   document.getElementById('coinVideo').style.animation = "spin 4s linear infinite";
 
-  // Progress Bar & Fake Reward Loop
-  interval = setInterval(() => {
-    progressVal += 0.5;
-    if (progressVal >= 100) progressVal = 0;
-    document.getElementById('progress-bar').style.width = progressVal + "%";
-    totalReward += 0.0001;
-    document.getElementById('reward').innerText = totalReward.toFixed(3) + " CPI";
-  }, 300);
-
-  // Timer & Supply Loop
   timerInterval = setInterval(() => {
-    if (countdown > 0) {
-      countdown--;
-      document.getElementById('timer').textContent = formatTime(countdown);
-      if (countdown % 12 === 0) {
-        circulating -= 1;
-        document.getElementById('circulating-text').innerHTML = '🔄 Circulating: ' + circulating.toLocaleString() + ' CPI';
-      }
+    const startTime = parseInt(localStorage.getItem(STORAGE_KEY));
+    const currentElapsed = Math.floor((Date.now() - startTime) / 1000);
+    updateUI(currentElapsed);
+    
+    // Animasi penurunan supply setiap 12 detik
+    if (currentElapsed % 12 === 0 && countdown > 0) {
+      circulating -= 1;
+      document.getElementById('circulating-text').innerHTML = '🔄 Circulating: ' + circulating.toLocaleString() + ' CPI';
     }
   }, 1000);
 
-  // Random Log Loop
   logInterval = setInterval(() => {
     addLog(logs[Math.floor(Math.random() * logs.length)]);
-  }, 1800);
+  }, 3000);
 }
 
-function stopMiningProcess() {
-  mining = false;
-  document.getElementById('mineBtn').innerText = "⛏️ Start Mining";
-  clearInterval(interval);
-  clearInterval(logInterval);
-  clearInterval(timerInterval);
-  document.getElementById('coinVideo').style.animation = "none";
-  addLog("Mining stopped.");
+function resumeMiningState() {
+  const startTime = localStorage.getItem(STORAGE_KEY);
+  if (startTime) {
+    const elapsedSeconds = Math.floor((Date.now() - parseInt(startTime)) / 1000);
+    if (elapsedSeconds < CYCLE_DURATION) {
+      addLog("🔄 Resuming previous mining session...");
+      startMiningAnimation(elapsedSeconds);
+    } else {
+      updateUI(CYCLE_DURATION); 
+    }
+  }
 }
 
 // --- EVENTS ---
-
 document.getElementById('mineBtn').onclick = async () => {
   if (!mining) {
+    const startTime = localStorage.getItem(STORAGE_KEY);
+    const isFinished = startTime && Math.floor((Date.now() - parseInt(startTime)) / 1000) >= CYCLE_DURATION;
+
+    if (isFinished) {
+      // PROSES CLAIM DITEKAN
+      alert("Memuat Iklan AdMob... (Simulasi)\nSetelah iklan selesai, reward akan masuk ke wallet, dan siklus diulang.");
+      localStorage.removeItem(STORAGE_KEY); 
+      window.location.reload(); 
+      return;
+    }
+
     const connected = await connectWallet();
-    if (connected) startMiningProcess();
+    if (connected) {
+      localStorage.setItem(STORAGE_KEY, Date.now().toString()); 
+      startMiningAnimation(0);
+      addLog("🚀 Mining cycle started (8 Hours)");
+    }
   } else {
-    stopMiningProcess();
+    addLog("⚠️ Mining sedang berjalan. Tidak bisa distop manual.");
   }
 };
 
 window.onload = () => {
-  // Splash video (yang kedua) dihilangkan setelah 5 detik sesuai script asli Anda
   setTimeout(() => {
     document.getElementById('splash').style.opacity = '0';
     setTimeout(() => { document.getElementById('splash').style.display = 'none'; }, 600);
   }, 5000);
+
+  resumeMiningState();
 };
 
 if (window.ethereum) {
   window.ethereum.on('accountsChanged', () => window.location.reload());
 }
 </script>
-
 </body>
-  </html>
+</html>
