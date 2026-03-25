@@ -4,6 +4,6 @@ ORG_URL="https://evanadua.github.io/cpi-miner-test/"
 
 [[CURRENCIES]]
 code="CPI"
-issuer="GC3Q43M5BPZCG4C2MUECXWCAL4XEHCQGSYJTKCGCTZD5O5PH54FR3FWX (Masukkan Public Key dompet Pabrik/Issuer Anda)"
+issuer="GC3Q43M5BPZCG4C2MUECXWCAL4XEHCQGSYJTKCGCTZD5O5PH54FR3FWX"
 desc="Token resmi untuk ekosistem Conspindo."
 image="https://raw.githubusercontent.com/evanadua/cpi-miner-test/main/logo.png"
