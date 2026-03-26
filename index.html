@@ -192,97 +192,248 @@
 </div>
 
 <script>
-// --- LOGIKA MESIN PI SDK (PENYEMPURNAAN) ---
+// =============================
+// 🔷 PI SDK INIT
+// =============================
 const Pi = window.Pi;
 Pi.init({ version: "2.0", sandbox: true });
 
 let userPi = null;
 let mining = false;
-let timerInterval, logInterval;
-const CYCLE_DURATION = 8 * 60 * 60;
-const logs = ["Connecting Pi Node...", "Authenticating Pioneer...", "Verifying Cloud Hash...", "Mining CPI Token...", "Syncing Database..."];
+let timerInterval = null;
+let logInterval = null;
 
+const CYCLE_DURATION = 8 * 60 * 60;
+const logs = [
+  "Connecting Pi Node...",
+  "Authenticating Pioneer...",
+  "Verifying Cloud Hash...",
+  "Mining CPI Token...",
+  "Syncing Database..."
+];
+
+// =============================
+// 🔷 AUTH PI (ANTI HANG)
+// =============================
 async function authPi() {
-  try {
-    const auth = await Pi.authenticate(['username', 'payments'], (p) => {});
-    userPi = auth.user;
-    document.getElementById('pi-username-display').innerText = userPi.username;
-    document.getElementById('refLink').value = "https://conspindo.com/join?ref=" + userPi.username;
-    addLog("✅ Connected: " + userPi.username);
-  } catch (err) {
-    document.getElementById('pi-username-display').innerText = "Guest Mode";
-    document.getElementById('refLink').value = "https://conspindo.com/join?ref=guest";
-    addLog("⚠️ SDK Offline. Mode Simulasi.");
-  }
+  return new Promise(async (resolve, reject) => {
+    try {
+      const timeout = setTimeout(() => {
+        reject("Timeout Pi Auth");
+      }, 10000);
+
+      const auth = await Pi.authenticate(['username', 'payments'], () => {});
+      clearTimeout(timeout);
+
+      userPi = auth.user;
+
+      document.getElementById('pi-username-display').innerText = userPi.username;
+      document.getElementById('refLink').value =
+        "https://conspindo.com/join?ref=" + userPi.username;
+
+      addLog("✅ Connected: " + userPi.username);
+      resolve(userPi);
+
+    } catch (err) {
+      document.getElementById('pi-username-display').innerText = "Guest Mode";
+      document.getElementById('refLink').value =
+        "https://conspindo.com/join?ref=guest";
+
+      addLog("⚠️ SDK Offline / Guest Mode");
+      reject(err);
+    }
+  });
 }
 
+// =============================
+// 🔷 LOG SYSTEM
+// =============================
 function addLog(msg) {
   const logBox = document.getElementById('mining-log');
-  logBox.innerHTML = `[${new Date().toLocaleTimeString()}] ${msg}<br>${logBox.innerHTML}`;
+  logBox.innerHTML =
+    `[${new Date().toLocaleTimeString()}] ${msg}<br>` +
+    logBox.innerHTML;
 }
 
+// =============================
+// 🔷 START MINING
+// =============================
 function startMining() {
-  mining = true;
-  localStorage.setItem('cpi_mining', "true");
-  localStorage.setItem('cpi_start', Date.now().toString());
-  document.getElementById('mineBtn').innerText = "⏸️ Pause Mining";
-  document.getElementById('mineBtn').style.background = "linear-gradient(90deg, #ffcc00, #ff9900)";
-  document.getElementById('coinVideo').style.animation = "spin 4s linear infinite";
-  timerInterval = setInterval(updateUI, 1000);
-  logInterval = setInterval(() => addLog(logs[Math.floor(Math.random() * logs.length)]), 4000);
-}
+  if (mining) return;
 
-function updateUI() {
-  let start = parseInt(localStorage.getItem('cpi_start'));
-  let elapsed = (Date.now() - start) / 1000;
-  if (elapsed >= CYCLE_DURATION) {
-    clearInterval(timerInterval);
-    document.getElementById('mineBtn').innerText = "🎁 Claim Reward";
-    document.getElementById('mineBtn').style.background = "linear-gradient(90deg, #00ffaa, #00b377)";
-  } else {
-    let rem = CYCLE_DURATION - Math.floor(elapsed);
-    document.getElementById('timer').innerText = `${String(Math.floor(rem/3600)).padStart(2,'0')}:${String(Math.floor((rem%3600)/60)).padStart(2,'0')}:${String(rem%60).padStart(2,'0')}`;
-    document.getElementById('progress-bar').style.width = (elapsed/CYCLE_DURATION*100) + "%";
-    document.getElementById('reward').innerText = (elapsed/60*0.000210).toFixed(6) + " CPI";
+  mining = true;
+
+  localStorage.setItem('cpi_mining', "true");
+  if (!localStorage.getItem('cpi_start')) {
+    localStorage.setItem('cpi_start', Date.now().toString());
+  }
+
+  const btn = document.getElementById('mineBtn');
+  btn.innerText = "⏸️ Pause Mining";
+  btn.style.background = "linear-gradient(90deg, #ffcc00, #ff9900)";
+
+  document.getElementById('coinVideo').style.animation =
+    "spin 4s linear infinite";
+
+  addLog("🚀 Mining Started");
+
+  if (!timerInterval) {
+    timerInterval = setInterval(updateUI, 1000);
+  }
+
+  if (!logInterval) {
+    logInterval = setInterval(() => {
+      addLog(logs[Math.floor(Math.random() * logs.length)]);
+    }, 4000);
   }
 }
 
-document.getElementById('mineBtn').onclick = async () => {
-  if (!mining) {
-    if(!userPi) await authPi();
-    startMining();
-  } else {
-    mining = false;
+// =============================
+// 🔷 PAUSE MINING
+// =============================
+function pauseMining() {
+  mining = false;
+
+  clearInterval(timerInterval);
+  clearInterval(logInterval);
+
+  timerInterval = null;
+  logInterval = null;
+
+  localStorage.setItem('cpi_mining', "false");
+
+  const btn = document.getElementById('mineBtn');
+  btn.innerText = "▶️ Resume Mining";
+  btn.style.background = "linear-gradient(90deg, #f6d365, #fda085)";
+
+  document.getElementById('coinVideo').style.animation = "none";
+
+  addLog("⏸️ Mining Paused");
+}
+
+// =============================
+// 🔷 UPDATE UI
+// =============================
+function updateUI() {
+  let start = parseInt(localStorage.getItem('cpi_start'));
+
+  if (!start) return;
+
+  let elapsed = (Date.now() - start) / 1000;
+
+  if (elapsed >= CYCLE_DURATION) {
     clearInterval(timerInterval);
-    clearInterval(logInterval);
-    document.getElementById('mineBtn').innerText = "▶️ Resume Mining";
-    document.getElementById('mineBtn').style.background = "linear-gradient(90deg, #f6d365, #fda085)";
-    document.getElementById('coinVideo').style.animation = "none";
+    timerInterval = null;
+
+    document.getElementById('mineBtn').innerText = "🎁 Claim Reward";
+    document.getElementById('mineBtn').style.background =
+      "linear-gradient(90deg, #00ffaa, #00b377)";
+
+    addLog("🎉 Mining Complete!");
+  } else {
+    let rem = CYCLE_DURATION - Math.floor(elapsed);
+
+    document.getElementById('timer').innerText =
+      `${String(Math.floor(rem/3600)).padStart(2,'0')}:` +
+      `${String(Math.floor((rem%3600)/60)).padStart(2,'0')}:` +
+      `${String(rem%60).padStart(2,'0')}`;
+
+    document.getElementById('progress-bar').style.width =
+      (elapsed / CYCLE_DURATION * 100) + "%";
+
+    document.getElementById('reward').innerText =
+      (elapsed / 60 * 0.000210).toFixed(6) + " CPI";
+  }
+}
+
+// =============================
+// 🔷 BUTTON HANDLER (FIXED)
+// =============================
+document.getElementById('mineBtn').onclick = async () => {
+  const btn = document.getElementById('mineBtn');
+
+  if (!mining) {
+
+    btn.innerText = "⏳ Connecting...";
+
+    if (!userPi) {
+      try {
+        await authPi();
+      } catch (e) {
+        addLog("⚠️ Lanjut Mode Simulasi");
+      }
+    }
+
+    startMining();
+
+  } else {
+    pauseMining();
   }
 };
 
-// UI NAVIGATION & MODALS
+// =============================
+// 🔷 AUTO RESUME SYSTEM
+// =============================
+function restoreMiningState() {
+  const isMiningSaved = localStorage.getItem('cpi_mining');
+
+  if (isMiningSaved === "true") {
+    addLog("🔄 Restoring Mining Session...");
+    startMining();
+  }
+}
+
+// =============================
+// 🔷 UI NAVIGATION
+// =============================
 function changeMenu(el, id) {
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
   el.classList.add('active');
+
   document.querySelectorAll('.dashboard').forEach(d => d.style.display = 'none');
   document.getElementById(id).style.display = 'block';
 }
+
+// =============================
+// 🔷 UTIL
+// =============================
 function copyReferral() {
   const inp = document.getElementById("refLink");
-  inp.select(); document.execCommand("copy");
+  inp.select();
+  document.execCommand("copy");
   alert("Link Tersalin!");
 }
-function showLogoutModal() { document.getElementById('logoutModal').style.display = 'flex'; }
-function closeLogoutModal() { document.getElementById('logoutModal').style.display = 'none'; }
-function executeDisconnect() { localStorage.clear(); window.location.reload(); }
 
+function showLogoutModal() {
+  document.getElementById('logoutModal').style.display = 'flex';
+}
+
+function closeLogoutModal() {
+  document.getElementById('logoutModal').style.display = 'none';
+}
+
+function executeDisconnect() {
+  localStorage.clear();
+  window.location.reload();
+}
+
+// =============================
+// 🔷 ON LOAD
+// =============================
 window.onload = () => {
+
   setTimeout(() => {
     document.getElementById('splash').style.opacity = '0';
-    setTimeout(() => document.getElementById('splash').style.display = 'none', 600);
+    setTimeout(() => {
+      document.getElementById('splash').style.display = 'none';
+    }, 600);
   }, 4000);
-  authPi();
+
+  // Login Pi (non-blocking)
+  authPi().catch(() => {});
+
+  // Restore mining
+  restoreMiningState();
 };
 </script>
 </body>
